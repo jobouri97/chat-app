@@ -1,8 +1,6 @@
-import { useState } from 'react'
-import './App.css'
+import LoginPage from './pages/LoginPage.jsx'
 
 function App() {
-  const [count, setCount] = (0)
 
   return (
     <>
