@@ -226,19 +226,13 @@ function ChatPage({ setAuthenticatedUser }) {
   // - other user's ID
   // - unread message count
   // - last message date
-  const [
-    conversationSummaries,
-    setConversationSummaries,
-  ] = useState([]);
+  const [conversationSummaries, setConversationSummaries] = useState([]);
 
   // Store what the user types in the contact search box.
   const [userSearch, setUserSearch] = useState("");
 
   // Control whether the contacts list is visible on mobile.
-  const [
-    showMobileContacts,
-    setShowMobileContacts,
-  ] = useState(false);
+  const [showMobileContacts, setShowMobileContacts,] = useState(false);
 
   // Store a number for the latest user-selection request.
   //
@@ -977,8 +971,8 @@ function ChatPage({ setAuthenticatedUser }) {
       {/* Main chat layout. */}
       <section
         className={`chat-shell ${showMobileContacts
-            ? "show-contacts"
-            : "show-conversation"
+          ? "show-contacts"
+          : "show-conversation"
           }`}
       >
         {/* Left side containing contacts. */}
@@ -1260,8 +1254,8 @@ function ChatPage({ setAuthenticatedUser }) {
                             on who sent the message. */}
                         <div
                           className={`message-line ${isCurrentUser
-                              ? "outgoing"
-                              : "incoming"
+                            ? "outgoing"
+                            : "incoming"
                             }`}
                         >
                           {/* Message bubble. */}
