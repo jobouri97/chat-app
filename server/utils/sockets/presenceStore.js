@@ -11,6 +11,9 @@
 // User 2 has one connection.
 const userConnections = new Map();
 
+// This store lives only in this Node process. It is suitable for one server.
+// Multiple production server instances would share presence through Redis.
+
 // Add a new socket connection for a user.
 export function addUserConnection(userId, socketId) {
   const normalizedUserId = Number(userId);

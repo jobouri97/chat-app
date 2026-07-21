@@ -4,6 +4,8 @@ import Button from "../components/Button";
 import { loginUser, registerUser } from "../APIs/userAPI";
 
 function LoginPage({ setCurrentUser }) {
+  // Controlled form fields live in one object. Each input displays a value from
+  // this object and updates it through updateField when the user types.
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [user, setUser] = useState({
@@ -15,6 +17,8 @@ function LoginPage({ setCurrentUser }) {
   const [isLogin, setIsLogin] = useState(true);
 
   function validateUser() {
+    // Client-side validation gives quick feedback. The server repeats validation
+    // because browser data can always be changed or sent without this UI.
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email.trim())) {
       return "A valid email is required.";
     }
@@ -30,6 +34,7 @@ function LoginPage({ setCurrentUser }) {
   }
 
   async function handleSubmit(event) {
+    // Prevent the browser's normal form submission, which would reload the page.
     event.preventDefault();
     setError("");
     const validationError = validateUser();
@@ -45,6 +50,7 @@ function LoginPage({ setCurrentUser }) {
             password: user.password,
           });
       localStorage.setItem("token", data.token);
+      // Updating the parent App state switches the screen from login to chat.
       setCurrentUser(data.user);
     } catch (requestError) {
       setError(requestError.message);
@@ -54,6 +60,8 @@ function LoginPage({ setCurrentUser }) {
   }
 
   function updateField(field, value) {
+    // Spread (...) copies the other fields so changing email does not erase the
+    // username or password already entered.
     setUser((current) => ({ ...current, [field]: value }));
   }
 

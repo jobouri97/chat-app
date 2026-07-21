@@ -10,6 +10,8 @@ export async function getConversationMessages(req, res) {
   try {
     const conversationId = Number(req.params.conversationId);
     const userId = req.user.userId;
+    // beforeId is optional. When supplied, it asks for messages older than that
+    // message ID and supports an infinite-scroll style interface.
     const beforeId = req.query.beforeId === undefined
       ? null
       : Number(req.query.beforeId);
@@ -33,6 +35,7 @@ export async function getConversationMessages(req, res) {
 
     return res.status(200).json({
       messages,
+      // null means there is no evidence of another full page to request.
       nextBeforeId: messages.length === config.messagePageSize
         ? messages[0].id
         : null,

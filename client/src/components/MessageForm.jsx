@@ -38,12 +38,14 @@ function MessageForm({
 
     onStartTyping();
 
+    // Automatically stop the typing indicator after 1.5 seconds of inactivity.
     typingTimeoutRef.current = setTimeout(() => {
       onStopTyping();
     }, 1500);
   }
 
   useEffect(() => {
+    // Clear the timer and typing status if this form leaves the page.
     return () => {
       clearTimeout(typingTimeoutRef.current);
       onStopTyping();

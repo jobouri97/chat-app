@@ -36,7 +36,9 @@ export async function createConversation(firstUserId, secondUserId,) {
         // Start a database transaction.
         await client.query("BEGIN");
 
-        // Serialize creation for this exact user pair to prevent duplicates.
+        // An advisory lock is a temporary PostgreSQL lock identified by two
+        // numbers. If both users click at the same moment, one request waits for
+        // the other, preventing two private conversations for the same pair.
         const lowerUserId = Math.min(firstUserId, secondUserId);
         const higherUserId = Math.max(firstUserId, secondUserId);
         await client.query(

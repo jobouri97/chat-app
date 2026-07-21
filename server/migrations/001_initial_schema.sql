@@ -1,5 +1,8 @@
 BEGIN;
 
+-- A migration is a repeatable description of the database structure. Run it
+-- with `npm run migrate` instead of manually creating tables in production.
+
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   username VARCHAR(50) NOT NULL,
@@ -25,6 +28,9 @@ CREATE TABLE IF NOT EXISTS conversation_participants (
   PRIMARY KEY (conversation_id, user_id)
 );
 
+-- This join table represents the many-to-many relationship between users and
+-- conversations. Its combined primary key prevents duplicate memberships.
+
 CREATE INDEX IF NOT EXISTS conversation_participants_user_id_index
   ON conversation_participants (user_id, conversation_id);
 
@@ -38,6 +44,7 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 
 CREATE INDEX IF NOT EXISTS messages_conversation_cursor_index
+  -- This index makes "load older messages" cursor queries efficient.
   ON messages (conversation_id, id DESC);
 CREATE INDEX IF NOT EXISTS messages_unread_index
   ON messages (conversation_id, sender_id) WHERE read_at IS NULL;

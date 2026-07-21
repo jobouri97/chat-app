@@ -5,6 +5,8 @@ import pool from "../../database.js";
 import { config } from "../../config.js";
 
 export function registerMessageEvents(io, socket) {
+  // The callback named "reply" is a Socket.IO acknowledgement. It lets the
+  // sender know whether the server saved the message successfully.
   socket.on(
     "message:send",
     async ({ conversationId, text } = {}, reply) => {
@@ -20,6 +22,7 @@ export function registerMessageEvents(io, socket) {
           return;
         }
 
+        // The model checks that this authenticated user belongs to the chat.
         const message = await createMessage(
           id,
           socket.userId,
@@ -46,6 +49,8 @@ export function registerMessageEvents(io, socket) {
         );
 
         const recipientId = recipientResult.rows[0]?.user_id;
+        // A conversation room reaches users currently viewing this chat. The
+        // recipient's private room also reaches their other open views/devices.
         let recipients = io.to(`conversation:${id}`);
 
         if (recipientId) {

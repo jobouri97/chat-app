@@ -47,6 +47,8 @@ export default function verifyToken(req, res, next) {
     //
     // Now any route after this middleware
     // can know which user made the request.
+    // Controllers trust this server-created value instead of a user ID supplied
+    // in the request body, which prevents users from impersonating one another.
     req.user = decodedToken;
 
     // Everything is OK.

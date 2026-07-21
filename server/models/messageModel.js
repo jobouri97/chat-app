@@ -9,6 +9,8 @@ export async function getMessagesByConversationId(
   limit,
   beforeId,
 ) {
+  // beforeId is a cursor. Instead of loading every message, each request loads
+  // one page of older messages. This stays fast as conversations become large.
   const result = await pool.query(
     `
       SELECT
@@ -34,6 +36,8 @@ export async function getMessagesByConversationId(
     [conversationId, userId, limit, beforeId],
   );
 
+  // SQL reads newest-first to use the index efficiently. The UI displays the
+  // page oldest-first, so reverse the small result array before returning it.
   return result.rows.reverse();
 }
 
@@ -44,6 +48,8 @@ export async function createMessage(
   senderId,
   content,
 ) {
+  // INSERT ... SELECT ... WHERE EXISTS performs authorization and insertion in
+  // one database statement, avoiding a timing gap between a check and a write.
   const result = await pool.query(
     `
       INSERT INTO messages (
@@ -77,6 +83,8 @@ export async function markMessagesAsRead(
   conversationId,
   userId,
 ) {
+  // Only messages sent by somebody else are marked as read. The EXISTS clause
+  // also prevents a non-participant from changing messages in a conversation.
   const result = await pool.query(
     `
       UPDATE messages
