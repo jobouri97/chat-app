@@ -200,6 +200,9 @@ function ChatPage({ setAuthenticatedUser }) {
   // Store information about the logged-in user.
   const [currentUser, setCurrentUser] = useState(null);
 
+  // Keep the loading transition visible until the page's initial data arrives.
+  const [isLoadingPage, setIsLoadingPage] = useState(true);
+
   // True while a conversation and its messages are loading.
   const [isLoadingConversation, setIsLoadingConversation] =
     useState(false);
@@ -614,6 +617,8 @@ function ChatPage({ setAuthenticatedUser }) {
       } catch (loadError) {
         // Show the error if one of the requests fails.
         setError(loadError.message);
+      } finally {
+        setIsLoadingPage(false);
       }
     }
 
@@ -962,6 +967,27 @@ function ChatPage({ setAuthenticatedUser }) {
     // Tell the parent component
     // that there is no authenticated user.
     setAuthenticatedUser(null);
+  }
+
+  if (isLoadingPage) {
+    return (
+      <main className="chat-loading-page" aria-live="polite" aria-busy="true">
+        <div className="chat-loading-content">
+          <div className="chat-loading-logo" aria-hidden="true">
+            <span>C</span>
+            <i />
+            <i />
+            <i />
+          </div>
+          <p className="eyebrow">Chatter</p>
+          <h1>Opening your conversations</h1>
+          <p className="chat-loading-copy">Connecting securely and getting everything ready.</p>
+          <div className="chat-loading-track" aria-hidden="true">
+            <span />
+          </div>
+        </div>
+      </main>
+    );
   }
 
   // Return the page interface.

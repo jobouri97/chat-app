@@ -179,6 +179,112 @@ button:disabled { cursor: not-allowed; opacity: 0.55; }
 }
 
 /* Chat */
+.chat-loading-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 32px 20px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(122, 108, 243, 0.22), transparent 30%),
+    radial-gradient(circle at 82% 78%, rgba(47, 185, 130, 0.14), transparent 28%),
+    #f5f6fb;
+}
+
+.chat-loading-content {
+  width: min(100%, 440px);
+  text-align: center;
+  animation: loading-content-in 450ms ease-out both;
+}
+
+.chat-loading-logo {
+  position: relative;
+  display: grid;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 26px;
+  place-items: center;
+}
+
+.chat-loading-logo span {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border-radius: 19px;
+  color: white;
+  background: linear-gradient(135deg, #796cf3, #5044c9);
+  box-shadow: 0 14px 30px rgba(101, 88, 232, 0.32);
+  font-size: 1.45rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.chat-loading-logo i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: loading-orbit 1.4s ease-in-out infinite;
+}
+
+.chat-loading-logo i:nth-of-type(2) { animation-delay: -0.46s; }
+.chat-loading-logo i:nth-of-type(3) { animation-delay: -0.92s; }
+
+.chat-loading-content h1 {
+  margin: 8px 0 10px;
+  color: var(--ink);
+  font-size: clamp(1.65rem, 5vw, 2.1rem);
+  letter-spacing: -0.04em;
+}
+
+.chat-loading-copy {
+  margin: 0 auto 28px;
+  color: var(--muted);
+}
+
+.chat-loading-track {
+  width: min(100%, 260px);
+  height: 4px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(101, 88, 232, 0.12);
+}
+
+.chat-loading-track span {
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #796cf3, #4fc59a);
+  animation: loading-track 1.25s ease-in-out infinite;
+}
+
+@keyframes loading-content-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+@keyframes loading-orbit {
+  0% { transform: rotate(0deg) translateX(35px) scale(0.7); opacity: 0.35; }
+  50% { opacity: 1; }
+  100% { transform: rotate(360deg) translateX(35px) scale(0.7); opacity: 0.35; }
+}
+
+@keyframes loading-track {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(345%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-loading-content { animation: none; }
+  .chat-loading-logo i { animation-duration: 2.8s; }
+  .chat-loading-track span { animation-duration: 2.5s; }
+}
+
 .chat-page {
   min-height: 100vh;
   display: grid;
