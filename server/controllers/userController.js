@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { findUserById, findUserByEmail, createUser, deleteUserById, updateUserById, updateUserPasswordById, getAllUsers } from "../models/userModel.js";
+import { findUserById, findUserByEmail, findUserByUsername, createUser, deleteUserById, updateUserById, updateUserPasswordById, getAllUsers } from "../models/userModel.js";
 import { generateToken } from "../utils/generateToken.js";
 
 export async function getCurrentUser(req, res) {
@@ -110,11 +110,22 @@ export async function registerUser(req, res) {
   try {
     // Get the user's information from the request
     const { username, email, password } = req.body;
+    const normalizedUsername = username?.trim();
 
     // Make sure all required fields were provided
-    if (!username || !email || !password) {
+    if (!normalizedUsername || !email || !password) {
       return res.status(400).json({
         message: "Username, email, and password are required.",
+      });
+    }
+
+    const existingUsername = await findUserByUsername(
+      normalizedUsername,
+    );
+
+    if (existingUsername) {
+      return res.status(409).json({
+        message: "Username already exists.",
       });
     }
 
@@ -132,7 +143,7 @@ export async function registerUser(req, res) {
 
     // Create the new user
     const user = await createUser(
-      username,
+      normalizedUsername,
       email,
       passwordHash
     );
@@ -147,6 +158,12 @@ export async function registerUser(req, res) {
       user,
     });
   } catch (error) {
+    if (error.code === "23505") {
+      return res.status(409).json({
+        message: "Username or email already exists.",
+      });
+    }
+
     console.error("Register error:", error);
 
     return res.status(500).json({
@@ -191,18 +208,30 @@ export async function updateUser(req, res) {
 
     // Get the new data from the request body
     const { username, email } = req.body;
+    const normalizedUsername = username?.trim();
 
     // Make sure all required fields were provided
-    if (!username || !email) {
+    if (!normalizedUsername || !email) {
       return res.status(400).json({
         message: "Username and email are required.",
+      });
+    }
+
+    const existingUsername = await findUserByUsername(
+      normalizedUsername,
+      id,
+    );
+
+    if (existingUsername) {
+      return res.status(409).json({
+        message: "Username already exists.",
       });
     }
 
     // Update the user
     const updatedUser = await updateUserById(
       id,
-      username,
+      normalizedUsername,
       email
     );
 
@@ -219,6 +248,12 @@ export async function updateUser(req, res) {
       user: updatedUser,
     });
   } catch (error) {
+    if (error.code === "23505") {
+      return res.status(409).json({
+        message: "Username or email already exists.",
+      });
+    }
+
     console.error("Update user error:", error);
 
     return res.status(500).json({

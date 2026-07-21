@@ -34,7 +34,9 @@ function App() {
     return <p>Loading...</p>;
   }
 
-  return currentUser ? (<ChatPage currentUser={currentUser} />) : (<LoginPage setCurrentUser={setCurrentUser} />);
+  return currentUser
+    ? <ChatPage setAuthenticatedUser={setCurrentUser} />
+    : <LoginPage setCurrentUser={setCurrentUser} />;
 }
 
 export default App;

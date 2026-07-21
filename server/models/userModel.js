@@ -23,6 +23,24 @@ export async function findUserByEmail(email) {
   return result.rows[0];
 }
 
+export async function findUserByUsername(
+  username,
+  excludedUserId = null,
+) {
+  const result = await pool.query(
+    `
+      SELECT id, username
+      FROM users
+      WHERE LOWER(BTRIM(username)) = LOWER(BTRIM($1))
+        AND ($2::INTEGER IS NULL OR id != $2)
+      LIMIT 1
+    `,
+    [username, excludedUserId],
+  );
+
+  return result.rows[0] || null;
+}
+
 export async function findUserById(id) {
   const result = await pool.query(
     `

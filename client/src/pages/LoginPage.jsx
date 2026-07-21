@@ -102,7 +102,7 @@ function LoginPage({ setCurrentUser }) {
     }
 
     function loginForm() {
-        return (<form onSubmit={handleSubmit}>
+        return (<form className="auth-form" onSubmit={handleSubmit}>
 
             <TextInput
                 label="Email"
@@ -126,7 +126,7 @@ function LoginPage({ setCurrentUser }) {
             />
 
 
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="primary-button">
                   {loading ? "Logging in..." : "Login"}
             </Button>
 
@@ -134,7 +134,7 @@ function LoginPage({ setCurrentUser }) {
     }
 
     function registerForm() {
-        return (<form onSubmit={handleSubmit}>
+        return (<form className="auth-form" onSubmit={handleSubmit}>
             <TextInput
                 label="Username"
                 name="username"
@@ -186,7 +186,7 @@ function LoginPage({ setCurrentUser }) {
                 }
             />
 
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="primary-button">
                   {loading ? "Registering..." : "Register"}
             </Button>
         </form>);
@@ -196,22 +196,37 @@ function LoginPage({ setCurrentUser }) {
     // Render
     // ==========================
     return (
-        <div className="container py-4">
+        <main className="auth-page">
+            <section className="auth-card">
+                <div className="brand-mark" aria-hidden="true">C</div>
+                <p className="eyebrow">Welcome to Chatter</p>
+                <h1>{isLogin ? "Good to see you" : "Create your account"}</h1>
+                <p className="auth-subtitle">
+                    {isLogin
+                        ? "Sign in to continue your conversations."
+                        : "Join and start chatting in a few seconds."}
+                </p>
 
-            <div>
-                <Button onClick={() => setIsLogin(true)}>
-                    Login
-                </Button>
+                <div className="auth-tabs" role="tablist" aria-label="Account action">
+                    <Button
+                        onClick={() => setIsLogin(true)}
+                        className={isLogin ? "auth-tab active" : "auth-tab"}
+                    >
+                        Login
+                    </Button>
 
-                <Button onClick={() => setIsLogin(false)}>
-                    Register
-                </Button>
-            </div>
-            {isLogin ? loginForm() : registerForm()}
+                    <Button
+                        onClick={() => setIsLogin(false)}
+                        className={!isLogin ? "auth-tab active" : "auth-tab"}
+                    >
+                        Register
+                    </Button>
+                </div>
 
-            {error && <p>{error}</p>}
-
-        </div >
+                {error && <p className="alert-message">{error}</p>}
+                {isLogin ? loginForm() : registerForm()}
+            </section>
+        </main>
     );
 }
 
