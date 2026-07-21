@@ -1,16 +1,17 @@
 import express from "express";
 import { getUsers, getCurrentUser, updateUser, updateCurrentUserPassword, deleteUser, loginUser, registerUser } from "../controllers/userController.js";
 import verifyToken from "../middleware/verifyToken.js";
+import { authenticationLimiter } from "../middleware/security.js";
 
 const router = express.Router();
 
 /* ---------- Authentication ---------- */
 
 // Register a new user
-router.post("/register", registerUser);
+router.post("/register", authenticationLimiter, registerUser);
 
 // Login an existing user
-router.post("/login", loginUser);
+router.post("/login", authenticationLimiter, loginUser);
 
 /* ---------- User ---------- */
 

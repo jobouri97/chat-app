@@ -4,13 +4,16 @@ import { registerConversationEvents } from "./conversationSocket.js";
 import { registerMessageEvents } from "./messageSocket.js";
 import { registerPresenceEvents } from "./presenceSocket.js";
 import { registerTypingEvents } from "./typingSocket.js";
-import { registerSeenEvents } from "./seenSocket.js";
+import { isAllowedOrigin } from "../../config.js";
 
 export function initializeSocketServer(httpServer) {
   const io = new Server(httpServer, {
     cors: {
-      origin: "http://localhost:5173",
+      origin(origin, callback) {
+        callback(isAllowedOrigin(origin) ? null : new Error("Origin not allowed by CORS."), true);
+      },
     },
+    maxHttpBufferSize: 32 * 1024,
   });
 
   // Authenticate every socket before it connects
@@ -23,7 +26,6 @@ export function initializeSocketServer(httpServer) {
     registerConversationEvents(io, socket);
     registerMessageEvents(io, socket);
     registerTypingEvents(io, socket);
-    registerSeenEvents(io, socket);
   });
 
   return io;

@@ -11,7 +11,7 @@ export async function startConversation(req, res) {
         // The client sends only the selected user's ID.
         const otherUserId = Number(req.body.otherUserId);
 
-        if (!Number.isInteger(otherUserId)) {
+        if (!Number.isInteger(otherUserId) || otherUserId <= 0) {
             return res.status(400).json({
                 message: "A valid otherUserId is required.",
             });
@@ -92,7 +92,7 @@ export async function getConversationById(req, res) {
         const currentUserId = Number(req.user.userId);
         const conversationId = Number(req.params.conversationId);
 
-        if (!Number.isInteger(conversationId)) {
+        if (!Number.isInteger(conversationId) || conversationId <= 0) {
             return res.status(400).json({
                 message: "Invalid conversation ID.",
             });

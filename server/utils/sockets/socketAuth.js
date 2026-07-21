@@ -1,5 +1,6 @@
 // Import JWT so we can verify the user's token.
 import jwt from "jsonwebtoken";
+import { config } from "../../config.js";
 
 // This middleware runs BEFORE the socket connection is accepted.
 //
@@ -30,7 +31,7 @@ export function socketAuth(socket, next) {
     // jwt.verify() will throw an error.
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET,
+      config.jwtSecret,
     );
 
     // Make sure the token contains a user ID.
@@ -46,9 +47,7 @@ export function socketAuth(socket, next) {
 
     // Authentication succeeded.
     next();
-  } catch (error) {
-    console.error("Socket authentication error:", error);
-
+  } catch {
     return next(
       new Error("Invalid or expired token."),
     );

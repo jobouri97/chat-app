@@ -9,7 +9,7 @@ export function registerTypingEvents(io, socket) {
       const id = Number(conversationId);
       const senderId = Number(socket.userId);
 
-      if (!Number.isInteger(id)) {
+      if (!Number.isInteger(id) || id <= 0) {
         return;
       }
 

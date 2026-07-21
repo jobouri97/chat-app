@@ -5,9 +5,14 @@ import {
 export function registerConversationEvents(io, socket) {
   socket.on(
     "conversation:join",
-    async ({ conversationId }, reply) => {
+    async ({ conversationId } = {}, reply) => {
       try {
         const id = Number(conversationId);
+
+        if (!Number.isInteger(id) || id <= 0) {
+          reply?.({ success: false, message: "Invalid conversation ID." });
+          return;
+        }
 
         const isParticipant =
           await isConversationParticipant(id, socket.userId);
@@ -32,7 +37,7 @@ export function registerConversationEvents(io, socket) {
     },
   );
 
-  socket.on("conversation:leave", ({ conversationId }) => {
+  socket.on("conversation:leave", ({ conversationId } = {}) => {
     socket.leave(`conversation:${Number(conversationId)}`);
   });
 }

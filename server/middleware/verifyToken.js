@@ -1,6 +1,7 @@
 // Bring in the JWT library.
 // We use it to check if a token is valid.
 import jwt from "jsonwebtoken";
+import { config } from "../config.js";
 
 // Middleware to verify the user's token.
 export default function verifyToken(req, res, next) {
@@ -37,7 +38,7 @@ export default function verifyToken(req, res, next) {
     // this line will throw an error.
     const decodedToken = jwt.verify(
       token,
-      process.env.JWT_SECRET
+      config.jwtSecret
     );
 
     // Save the decoded information in the request.

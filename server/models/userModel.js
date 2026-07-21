@@ -16,7 +16,7 @@ export async function getAllUsers() {
 
 export async function findUserByEmail(email) {
   const result = await pool.query(
-    "SELECT * FROM users WHERE email = $1",
+    "SELECT * FROM users WHERE LOWER(BTRIM(email)) = LOWER(BTRIM($1)) LIMIT 1",
     [email]
   );
 

@@ -6,6 +6,7 @@
 // The user shows this ID card to the server on future requests
 // so the server knows who they are without asking them to log in again.
 import jwt from "jsonwebtoken";
+import { config } from "../config.js";
 
 // Create a function that makes a token for a user.
 export function generateToken(userId) {
@@ -35,7 +36,7 @@ export function generateToken(userId) {
     // Later, when the user sends the token back,
     // the server uses the same secret to check
     // whether the token is genuine or has been changed.
-    process.env.JWT_SECRET,
+    config.jwtSecret,
 
     // Extra settings for the token.
     {
@@ -46,7 +47,7 @@ export function generateToken(userId) {
       //
       // After it expires, the user usually needs
       // to log in again to receive a new token.
-      expiresIn: process.env.JWT_EXPIRES_IN,
+      expiresIn: config.jwtExpiresIn,
     }
   );
 }

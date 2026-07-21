@@ -6,6 +6,8 @@ import pool from "../database.js";
 export async function getMessagesByConversationId(
   conversationId,
   userId,
+  limit,
+  beforeId,
 ) {
   const result = await pool.query(
     `
@@ -25,12 +27,14 @@ export async function getMessagesByConversationId(
            messages.conversation_id
       WHERE messages.conversation_id = $1
         AND conversation_participants.user_id = $2
-      ORDER BY messages.created_at ASC
+        AND ($4::BIGINT IS NULL OR messages.id < $4)
+      ORDER BY messages.id DESC
+      LIMIT $3
     `,
-    [conversationId, userId],
+    [conversationId, userId, limit, beforeId],
   );
 
-  return result.rows;
+  return result.rows.reverse();
 }
 
 // Create and save a new message.

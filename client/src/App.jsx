@@ -19,7 +19,7 @@ function App() {
       try {
         const data = await getCurrentUser(token);
         setCurrentUser(data.user);
-      } catch (error) {
+      } catch {
         localStorage.removeItem("token");
         setCurrentUser(null);
       } finally {

@@ -2,16 +2,17 @@ import {
   createMessage,
 } from "../../models/messageModel.js";
 import pool from "../../database.js";
+import { config } from "../../config.js";
 
 export function registerMessageEvents(io, socket) {
   socket.on(
     "message:send",
-    async ({ conversationId, text }, reply) => {
+    async ({ conversationId, text } = {}, reply) => {
       try {
         const id = Number(conversationId);
         const cleanText = text?.trim();
 
-        if (!cleanText) {
+        if (!Number.isInteger(id) || id <= 0 || !cleanText) {
           reply?.({
             success: false,
             message: "Message cannot be empty.",
@@ -49,6 +50,15 @@ export function registerMessageEvents(io, socket) {
 
         if (recipientId) {
           recipients = recipients.to(`user:${recipientId}`);
+        }
+
+
+        if (cleanText.length > config.messageMaxLength) {
+          reply?.({
+            success: false,
+            message: `Message must be ${config.messageMaxLength} characters or fewer.`,
+          });
+          return;
         }
 
         recipients.emit(

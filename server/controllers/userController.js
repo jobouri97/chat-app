@@ -49,7 +49,8 @@ export async function getUsers(req, res) {
 export async function loginUser(req, res) {
     try {
         // Get the login information sent by the frontend
-        const { email, password } = req.body;
+        const email = req.body.email?.trim().toLowerCase();
+        const { password } = req.body;
 
         // Make sure both fields were provided
         if (!email || !password) {
@@ -109,14 +110,27 @@ export async function loginUser(req, res) {
 export async function registerUser(req, res) {
   try {
     // Get the user's information from the request
-    const { username, email, password } = req.body;
+    const { username, password } = req.body;
     const normalizedUsername = username?.trim();
+    const normalizedEmail = req.body.email?.trim().toLowerCase();
 
     // Make sure all required fields were provided
-    if (!normalizedUsername || !email || !password) {
+    if (!normalizedUsername || !normalizedEmail || !password) {
       return res.status(400).json({
         message: "Username, email, and password are required.",
       });
+    }
+
+    if (normalizedUsername.length > 50) {
+      return res.status(400).json({ message: "Username must be 50 characters or fewer." });
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || normalizedEmail.length > 254) {
+      return res.status(400).json({ message: "A valid email address is required." });
+    }
+
+    if (password.length < 8 || password.length > 128) {
+      return res.status(400).json({ message: "Password must be between 8 and 128 characters." });
     }
 
     const existingUsername = await findUserByUsername(
@@ -130,7 +144,7 @@ export async function registerUser(req, res) {
     }
 
     // Check if the email is already being used
-    const existingUser = await findUserByEmail(email);
+    const existingUser = await findUserByEmail(normalizedEmail);
 
     if (existingUser) {
       return res.status(409).json({
@@ -144,7 +158,7 @@ export async function registerUser(req, res) {
     // Create the new user
     const user = await createUser(
       normalizedUsername,
-      email,
+      normalizedEmail,
       passwordHash
     );
 
@@ -174,8 +188,7 @@ export async function registerUser(req, res) {
 
 export async function deleteUser(req, res) {
   try {
-    // Get the user's ID from the URL
-    const { id } = req.params;
+    const id = req.user.userId;
 
     // Delete the user
     const deletedUser = await deleteUserById(id);
@@ -207,14 +220,22 @@ export async function updateUser(req, res) {
     const id = req.user.userId;
 
     // Get the new data from the request body
-    const { username, email } = req.body;
+    const { username } = req.body;
     const normalizedUsername = username?.trim();
+    const normalizedEmail = req.body.email?.trim().toLowerCase();
 
     // Make sure all required fields were provided
-    if (!normalizedUsername || !email) {
+    if (!normalizedUsername || !normalizedEmail) {
       return res.status(400).json({
         message: "Username and email are required.",
       });
+    }
+
+
+    if (normalizedUsername.length > 50 ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) ||
+        normalizedEmail.length > 254) {
+      return res.status(400).json({ message: "Valid username and email values are required." });
     }
 
     const existingUsername = await findUserByUsername(
@@ -232,7 +253,7 @@ export async function updateUser(req, res) {
     const updatedUser = await updateUserById(
       id,
       normalizedUsername,
-      email
+      normalizedEmail
     );
 
     // No user with this ID exists
@@ -278,9 +299,9 @@ export async function updateCurrentUserPassword(req, res) {
     }
 
     // Basic password validation
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8 || newPassword.length > 128) {
       return res.status(400).json({
-        message: "New password must be at least 6 characters.",
+        message: "New password must be between 8 and 128 characters.",
       });
     }
 

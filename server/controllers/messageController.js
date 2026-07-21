@@ -3,12 +3,16 @@ import {
   createMessage,
   markMessagesAsRead,
 } from "../models/messageModel.js";
+import { config } from "../config.js";
 
 // Return all messages from one conversation.
 export async function getConversationMessages(req, res) {
   try {
     const conversationId = Number(req.params.conversationId);
     const userId = req.user.userId;
+    const beforeId = req.query.beforeId === undefined
+      ? null
+      : Number(req.query.beforeId);
 
     if (!Number.isInteger(conversationId)) {
       return res.status(400).json({
@@ -16,13 +20,22 @@ export async function getConversationMessages(req, res) {
       });
     }
 
+    if (beforeId !== null && (!Number.isInteger(beforeId) || beforeId <= 0)) {
+      return res.status(400).json({ message: "Invalid beforeId cursor." });
+    }
+
     const messages = await getMessagesByConversationId(
       conversationId,
       userId,
+      config.messagePageSize,
+      beforeId,
     );
 
     return res.status(200).json({
       messages,
+      nextBeforeId: messages.length === config.messagePageSize
+        ? messages[0].id
+        : null,
     });
   } catch (error) {
     console.error("Get messages error:", error);
@@ -49,6 +62,13 @@ export async function sendMessage(req, res) {
     if (!content) {
       return res.status(400).json({
         message: "Message content is required.",
+      });
+    }
+
+
+    if (content.length > config.messageMaxLength) {
+      return res.status(400).json({
+        message: `Message must be ${config.messageMaxLength} characters or fewer.`,
       });
     }
 

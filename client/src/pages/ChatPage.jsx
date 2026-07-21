@@ -111,8 +111,15 @@ function ChatPage({ setAuthenticatedUser }) {
   const activeConversationIdRef = useRef(null);
   const currentUserIdRef = useRef(null);
 
-  activeConversationIdRef.current = conversation?.id ?? null;
-  currentUserIdRef.current = currentUser?.id ?? null;
+  const activeConversationId = conversation?.id ?? null;
+
+  useEffect(() => {
+    activeConversationIdRef.current = activeConversationId;
+  }, [activeConversationId]);
+
+  useEffect(() => {
+    currentUserIdRef.current = currentUser?.id ?? null;
+  }, [currentUser]);
 
   const selectableUsers = useMemo(
     () =>
@@ -441,16 +448,16 @@ function ChatPage({ setAuthenticatedUser }) {
   }
 
   const handleStartTyping = useCallback(() => {
-    if (conversation?.id) {
-      startTyping(conversation.id);
+    if (activeConversationId) {
+      startTyping(activeConversationId);
     }
-  }, [conversation?.id]);
+  }, [activeConversationId]);
 
   const handleStopTyping = useCallback(() => {
-    if (conversation?.id) {
-      stopTyping(conversation.id);
+    if (activeConversationId) {
+      stopTyping(activeConversationId);
     }
-  }, [conversation?.id]);
+  }, [activeConversationId]);
 
   function handleLogout() {
     localStorage.removeItem("token");

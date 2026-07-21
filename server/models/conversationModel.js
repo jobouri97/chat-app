@@ -36,6 +36,32 @@ export async function createConversation(firstUserId, secondUserId,) {
         // Start a database transaction.
         await client.query("BEGIN");
 
+        // Serialize creation for this exact user pair to prevent duplicates.
+        const lowerUserId = Math.min(firstUserId, secondUserId);
+        const higherUserId = Math.max(firstUserId, secondUserId);
+        await client.query(
+          "SELECT pg_advisory_xact_lock($1, $2)",
+          [lowerUserId, higherUserId],
+        );
+
+        const existingResult = await client.query(
+          `
+            SELECT c.id, c.created_at
+            FROM conversations c
+            JOIN conversation_participants cp ON cp.conversation_id = c.id
+            GROUP BY c.id, c.created_at
+            HAVING COUNT(*) = 2
+              AND COUNT(*) FILTER (WHERE cp.user_id IN ($1, $2)) = 2
+            LIMIT 1
+          `,
+          [firstUserId, secondUserId],
+        );
+
+        if (existingResult.rows[0]) {
+          await client.query("COMMIT");
+          return existingResult.rows[0];
+        }
+
         // First, create the empty conversation.
         const conversationResult = await client.query(
             `
