@@ -157,23 +157,22 @@ The server verifies the token and derives the user ID from it; it does not trust
 
 All protected endpoints require a bearer token.
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `POST` | `/register` | Register a user |
-| `POST` | `/login` | Log in and receive a JWT |
-| `GET` | `/` | List users |
-| `GET` | `/me` | Get the current user |
-| `PUT` | `/me` | Update the current user |
-| `PUT` | `/me/password` | Change the current password |
-| `DELETE` | `/me` | Delete the current user |
-| `POST` | `/api/conversations` | Start a conversation |
-| `GET` | `/api/conversations` | List the current user's conversations |
-| `GET` | `/api/conversations/:conversationId` | Get one conversation |
-| `GET` | `/api/conversations/:conversationId/messages` | Get a page of messages |
-| `POST` | `/api/conversations/:conversationId/messages` | Send a message over HTTP |
-| `PATCH` | `/api/conversations/:conversationId/messages/read` | Mark received messages as read |
-| `GET` | `/health/live` | Check whether the server is running |
-| `GET` | `/health/ready` | Check server and database readiness |
+| Method    | Endpoint                                      | Description                           |
+| ------    | --------                                      | -----------                           |
+| `POST`    | `/register`                                   | Register a user                       |
+| `POST`    | `/login`                                      | Log in and receive a JWT              |
+| `GET`     | `/`                                           | List users                            |
+| `GET`     | `/me`                                         | Get the current user                  |
+| `PUT`     | `/me`                                         | Update the current user               |
+| `PUT`     | `/me/password`                                | Change the current password           |
+| `DELETE`  | `/me`                                         | Delete the current user               |
+| `POST`    | `/api/conversations`                          | Start a conversation                  |
+| `GET`     | `/api/conversations`                          | List the current user's conversations |
+| `GET`     | `/api/conversations/:conversationId`          | Get one conversation                  |
+| `GET`     | `/api/conversations/:conversationId/messages` | Get a page of messages                |
+| `POST`    | `/api/conversations/:conversationId/messages` | Send a message over HTTP              |
+| `GET`     | `/health/live`                                | Check whether the server is running   |
+| `GET`     | `/health/ready`                               | Check server and database readiness   |
 
 Older message pages can be requested with the `beforeId` query parameter. The server returns at most `MESSAGE_PAGE_SIZE` messages per request.
 
@@ -186,13 +185,4 @@ Older message pages can be requested with the `beforeId` query parameter. The se
 - Authentication endpoints are rate-limited.
 - Socket connections and protected REST endpoints validate JWTs server-side.
 
-## Future improvements
 
-- Load each older 50-message page automatically when the user scrolls upward
-- Add automated integration and end-to-end tests
-- Add group conversations, attachments, and message search
-- Add deployment and container configuration
-
-## License
-
-This project currently uses the ISC license declared by the server package.
